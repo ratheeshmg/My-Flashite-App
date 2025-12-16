@@ -1,0 +1,33 @@
+# .github/workflows/android_build.yml
+
+name: Android CI Build
+
+on:
+  push:
+    branches: [ main ] # 'main' ബ്രാഞ്ചിലേക്ക് push ചെയ്യുമ്പോൾ ഇത് പ്രവർത്തിക്കും
+
+jobs:
+  build:
+    runs-on: ubuntu-latest 
+
+    steps:
+      - uses: actions/checkout@v4 
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew # gradlew സ്ക്രിപ്റ്റിന് അനുമതി നൽകുന്നു
+
+      - name: Build debug APK
+        run: ./gradlew assembleDebug # Gradle ഉപയോഗിച്ച് APK നിർമ്മിക്കുന്നു
+
+      - name: Upload Debug APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: flashlight-apk
+          path: app/build/outputs/apk/debug/app-debug.apk # നിർമ്മിച്ച APK സേവ് ചെയ്യുന്നു
